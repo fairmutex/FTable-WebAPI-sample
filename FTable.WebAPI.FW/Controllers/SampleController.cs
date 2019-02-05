@@ -262,9 +262,7 @@ namespace FTable.WebAPI.FW.Controllers
 
             // Global Search
             var globalSearch = "1=1";
-            if (globalSearchValue == null)
-                globalSearchValue = "";
-            else
+            if (globalSearchValue != "")
             {
                 var globalSearchJoiner = ".ToString().Contains(\"" + globalSearchValue.ToLower() + "\") ";
                 globalSearch = string.Join(globalSearchJoiner + "or ", columnNames);
@@ -312,21 +310,37 @@ namespace FTable.WebAPI.FW.Controllers
                 }
                 else if (filter.Type == "email")
                 {
-                    // TODO
-                    //var First = "";
-                    //if (filter.Apply.ContainsKey("first"))
-                    //    First = filter.Apply["first"].ToString();
-                    //var Second = "";
-                    //if (filter.Apply.ContainsKey("second"))
-                    //    Second = filter.Apply["second"].ToString();
-                    //if (First.Length > 0 && Second.Length > 0)
-                    //    filters.Add(filter.ColumnName+ ".Split(\"@\")[0].Contains(\"" + First + "\") and "+ filter.ColumnName + ".Split(\"@\")[1].Contains(\"" + Second + "\")");
-                    //else if (First.Length > 0)
-                    //    filters.Add(filter.ColumnName + ".Split(\"@\")[0].Contains(\"" + First + "\")");
-                    //else if (Second.Length > 0)
-                    //    filters.Add(filter.ColumnName + ".Split(\"@\")[1].Contains(\"" + Second + "\")");
-                     
+                    var email = new List<string>();
+                    // Local part of the email
+                    //var LocalPart = "";
+                    //if (filter.Apply.ContainsKey("localPart"))
+                    //{
+                    //    LocalPart = filter.Apply["localPart"].ToString();
+                    //    if (LocalPart.Length > 0)
+                    //        email.Add("(" + filter.ColumnName + ".IndexOf(\"@\") > " + filter.ColumnName + ".IndexOf(\"" + LocalPart + "\"))");
+                    //}
 
+                    var LocalPart = "";
+                    if (filter.Apply.ContainsKey("localPart"))
+                    {
+                        LocalPart = filter.Apply["localPart"].ToString();
+                        if (LocalPart.Length > 0)
+                        {
+                            email.Add("(" + filter.ColumnName + ".IndexOf(\"" + LocalPart + "\") > -1)");
+                            email.Add("(" + filter.ColumnName + ".IndexOf(\"" + LocalPart + "\") <= " + filter.ColumnName + ".IndexOf(\"@\"))");
+                        }
+                    }
+
+                    // Domain part of the email
+                    var Domain = "";
+                    if (filter.Apply.ContainsKey("domain"))
+                    {
+                        Domain = filter.Apply["domain"].ToString();
+                        if (Domain.Length > 0)
+                            email.Add("(" + filter.ColumnName + ".IndexOf(\"@\") <= " + filter.ColumnName + ".IndexOf(\"" + Domain + "\"))");
+                    }
+                    if (email.Count > 0)
+                        filters.Add("(" + string.Join(" and ", email) + ")");
                 }
                 else if (filter.Type == "checkbox")
                 {
@@ -337,6 +351,7 @@ namespace FTable.WebAPI.FW.Controllers
                     {
                         checkboxes.Add(filter.ColumnName + ".Contains(\"" + value + "\")");
                     }
+                    if (checkboxes.Count > 0)
                         filters.Add("("+string.Join(" or ", checkboxes) + ")");
                 }
                 else if (filter.Type == "date")
@@ -373,7 +388,8 @@ namespace FTable.WebAPI.FW.Controllers
                     {
                         dates.Add(filter.ColumnName + ".Year <=" + maxYear);
                     }
-                    filters.Add("(" + string.Join(" and ", dates) + ")");
+                    if(dates.Count > 0)
+                      filters.Add("(" + string.Join(" and ", dates) + ")");
                 }
             }
             var columnFilterLogic = "1=1";
@@ -403,7 +419,7 @@ namespace FTable.WebAPI.FW.Controllers
                     .Take(pagingLength).ToList();
 
             FTableResult.totalRows = Persons.Count();
-            FTableResult.totalRowsAfterModifications = Persons.Count();
+            FTableResult.totalRowsAfterModifications =  Persons.Count();
             FTableResult.Page = Result;
             return Ok(FTableResult);
         }
