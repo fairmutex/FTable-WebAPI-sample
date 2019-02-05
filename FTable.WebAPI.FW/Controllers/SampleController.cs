@@ -313,18 +313,18 @@ namespace FTable.WebAPI.FW.Controllers
                 else if (filter.Type == "email")
                 {
                     // TODO
-                    var First = "";
-                    if (filter.Apply.ContainsKey("first"))
-                        First = filter.Apply["first"].ToString();
-                    var Second = "";
-                    if (filter.Apply.ContainsKey("second"))
-                        Second = filter.Apply["second"].ToString();
-                    if (First.Length > 0 && Second.Length > 0)
-                        filters.Add(filter.ColumnName+ ".Split(\"@\")[0].Contains(\"" + First + "\") and "+ filter.ColumnName + ".Split(\"@\")[1].Contains(\"" + Second + "\")");
-                    else if (First.Length > 0)
-                        filters.Add(filter.ColumnName + ".Split(\"@\")[0].Contains(\"" + First + "\")");
-                    else if (Second.Length > 0)
-                        filters.Add(filter.ColumnName + ".Split(\"@\")[1].Contains(\"" + Second + "\")");
+                    //var First = "";
+                    //if (filter.Apply.ContainsKey("first"))
+                    //    First = filter.Apply["first"].ToString();
+                    //var Second = "";
+                    //if (filter.Apply.ContainsKey("second"))
+                    //    Second = filter.Apply["second"].ToString();
+                    //if (First.Length > 0 && Second.Length > 0)
+                    //    filters.Add(filter.ColumnName+ ".Split(\"@\")[0].Contains(\"" + First + "\") and "+ filter.ColumnName + ".Split(\"@\")[1].Contains(\"" + Second + "\")");
+                    //else if (First.Length > 0)
+                    //    filters.Add(filter.ColumnName + ".Split(\"@\")[0].Contains(\"" + First + "\")");
+                    //else if (Second.Length > 0)
+                    //    filters.Add(filter.ColumnName + ".Split(\"@\")[1].Contains(\"" + Second + "\")");
                      
 
                 }
@@ -341,7 +341,39 @@ namespace FTable.WebAPI.FW.Controllers
                 }
                 else if (filter.Type == "date")
                 {
-                    // TODO
+
+                    var dates = new List<string>();
+                    var minDay = filter.Apply["minDay"].ToString();
+                    if (minDay.Length > 0) {
+                        dates.Add(filter.ColumnName + ".Day >=" + minDay);
+                    }
+                    var minMonth = filter.Apply["minMonth"].ToString();
+                    if (minMonth.Length > 0)
+                    {
+                        dates.Add(filter.ColumnName + ".Month >=" + minMonth);
+                    }
+                    var minYear = filter.Apply["minYear"].ToString();
+                    if (minYear.Length > 0)
+                    {
+                        dates.Add(filter.ColumnName + ".Year >=" + minYear);
+                    }
+                    var maxDay = filter.Apply["maxDay"].ToString();
+                    if (maxDay.Length > 0)
+                    {
+                        
+                        dates.Add(filter.ColumnName + ".Day <=" + maxDay);
+                    }
+                    var maxMonth = filter.Apply["maxMonth"].ToString();
+                    if (maxMonth.Length > 0)
+                    {
+                        dates.Add(filter.ColumnName + ".Month <=" + maxMonth);
+                    }
+                    var maxYear = filter.Apply["maxYear"].ToString();
+                    if (maxYear.Length > 0)
+                    {
+                        dates.Add(filter.ColumnName + ".Year <=" + maxYear);
+                    }
+                    filters.Add("(" + string.Join(" and ", dates) + ")");
                 }
             }
             var columnFilterLogic = "1=1";
