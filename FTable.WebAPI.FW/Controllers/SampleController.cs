@@ -338,10 +338,16 @@ namespace FTable.WebAPI.FW.Controllers
                 {
                     var checkboxes = new List<string>();
                     var Values = filter.Apply["values"];
-                    //filters.Add(filter.ColumnName + " >= " + Min + " and " + filter.ColumnName + " <= " + Max);
-                    foreach (var value in Values)
+                    if (Values.Count() > 0)
                     {
-                        checkboxes.Add(filter.ColumnName + ".Contains(\"" + value + "\")");
+                        foreach (var value in Values)
+                        {
+                            checkboxes.Add(filter.ColumnName + ".Contains(\"" + value + "\")");
+                        }
+                    }
+                    else
+                    {
+                        checkboxes.Add("1=0");
                     }
                     if (checkboxes.Count > 0)
                         filters.Add("("+string.Join(" or ", checkboxes) + ")");
