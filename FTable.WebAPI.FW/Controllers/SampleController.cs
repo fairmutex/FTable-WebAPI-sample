@@ -311,14 +311,6 @@ namespace FTable.WebAPI.FW.Controllers
                 else if (filter.Type == "email")
                 {
                     var email = new List<string>();
-                    // Local part of the email
-                    //var LocalPart = "";
-                    //if (filter.Apply.ContainsKey("localPart"))
-                    //{
-                    //    LocalPart = filter.Apply["localPart"].ToString();
-                    //    if (LocalPart.Length > 0)
-                    //        email.Add("(" + filter.ColumnName + ".IndexOf(\"@\") > " + filter.ColumnName + ".IndexOf(\"" + LocalPart + "\"))");
-                    //}
 
                     var LocalPart = "";
                     if (filter.Apply.ContainsKey("localPart"))
@@ -419,7 +411,7 @@ namespace FTable.WebAPI.FW.Controllers
                     .Take(pagingLength).ToList();
 
             FTableResult.totalRows = Persons.Count();
-            FTableResult.totalRowsAfterModifications =  Persons.Count();
+            FTableResult.totalRowsAfterModifications = Persons.Where(globalSearch).Where(columnFilterLogic).Count();
             FTableResult.Page = Result;
             return Ok(FTableResult);
         }
