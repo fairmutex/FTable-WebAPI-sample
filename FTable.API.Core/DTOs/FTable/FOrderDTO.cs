@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace FTable.WebAPI.FW.DTOs.FTable
+namespace FTable.API.Core.DTOs.FTable
 {
     public class FOrderDTO
     {
